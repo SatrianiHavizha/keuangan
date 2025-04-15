@@ -1,0 +1,13 @@
+body {
+    background-color: #f9f9f9;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+.navbar {
+    background: linear-gradient(#98dbc6, #5bc8ac);
+}
+
+.scrollable-table {
+    max-height: 400px;
+    overflow-y: auto;
+}

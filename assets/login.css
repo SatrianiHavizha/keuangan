@@ -1,0 +1,60 @@
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+.background {
+    position: relative;
+    /* Untuk memungkinkan penggunaan ::before */
+    overflow: hidden;
+    /* Agar elemen ::before tidak keluar dari kontainer */
+    height: 100vh;
+    /* Pastikan mengambil seluruh tinggi layar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(#98dbc6, #5bc8ac);
+}
+
+.card {
+    min-height: 300px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+
+label.form-label {
+    color: #000;
+    /* Warna teks menjadi hitam */
+    display: block;
+    /* Memastikan label berada di atas input */
+    text-align: left;
+    /* Menempatkan teks di sebelah kiri */
+    margin-bottom: 0.5rem;
+    /* Menambahkan jarak bawah untuk estetika */
+}
+
+input {
+    width: 200px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
+    /* Shadow berlapis */
+}
+
+.form-check-input {
+    margin-right: 10px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+footer {
+    color: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+    font-size: 14px;
+}
