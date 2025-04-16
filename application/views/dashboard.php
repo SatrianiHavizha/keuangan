@@ -295,7 +295,12 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div>
                                                 <strong><?= htmlspecialchars($user->username); ?></strong><br>
-                                                <small>Role: <?= htmlspecialchars($user->role); ?></small>
+                                                <small>Role: <?= htmlspecialchars($user->role); ?></small><br>
+
+                                                <?php if ($user->role != 'admin'): ?>
+                                                    <small class="text-muted">Saldo: Rp <?= number_format($user->saldo, 0, ',', '.'); ?></small>
+                                                <?php endif; ?>
+
                                             </div>
                                             <div>
                                                 <a href="<?= site_url('admin/delete_user/' . $user->id); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin mau hapus user ini?')">Hapus</a>
@@ -313,7 +318,7 @@
 
             </div>
         </div>
-        
+
 
 
 
