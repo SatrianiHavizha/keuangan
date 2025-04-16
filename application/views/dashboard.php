@@ -285,84 +285,35 @@
                         <h5 class="fw-bold mb-3">Daftar User</h5>
 
                         <div class="position-absolute top-0 end-0 mt-2 me-3">
-                            <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahuser" data-jenis="Pemasukan">+ Tambah User</a>
+                            <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahuser">+ Tambah User</a>
                         </div>
 
                         <ul class="list-group list-group-flush">
-                            <?php
-                            $adaPemasukan = false;
-                            foreach ($transaksi as $item):
-                                if ($item->jenis == 'Pemasukan'):
-                                    $adaPemasukan = true;
-                            ?>
+                            <?php if (!empty($users)): ?>
+                                <?php foreach ($users as $user): ?>
                                     <li class="list-group-item">
-                                        <div class="d-flex flex-column">
-                                            <div class="d-flex justify-content-between align-items-start" style="font-family: 'Nunito', sans-serif;">
-                                                <div>
-                                                    <strong class="text-dark"><?= htmlspecialchars($item->keterangan); ?></strong><br>
-                                                    <small class="text-muted">Tanggal: <?= date('d M Y', strtotime($item->tanggal)); ?></small><br>
-                                                    <small class="text-muted">Jumlah: Rp <?= number_format($item->jumlah, 0, ',', '.'); ?></small>
-                                                </div>
-                                                <div class="text-end">
-                                                    <button class="btn btn-warning btn-sm btn-edit-pemasukan"
-                                                        data-id="<?= $item->id; ?>"
-                                                        data-keterangan="<?= htmlspecialchars($item->keterangan); ?>"
-                                                        data-jumlah="<?= $item->jumlah; ?>"
-                                                        data-tanggal="<?= $item->tanggal; ?>"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modalEditPemasukan">Edit</button>
-                                                    <a href="<?= site_url('keuangan/hapus/' . $item->id); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin mau hapus?')">Delete</a>
-                                                </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong><?= htmlspecialchars($user->username); ?></strong><br>
+                                                <small>Role: <?= htmlspecialchars($user->role); ?></small>
                                             </div>
-
-                                            
+                                            <div>
+                                                <a href="<?= site_url('admin/delete_user/' . $user->id); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin mau hapus user ini?')">Hapus</a>
+                                            </div>
                                         </div>
                                     </li>
-                                <?php
-                                endif;
-                            endforeach;
-                            if (!$adaPemasukan): ?>
-                                <li class="list-group-item text-center text-muted">Belum ada User.</li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li class="list-group-item text-center text-muted">Belum ada user terdaftar.</li>
                             <?php endif; ?>
                         </ul>
+
                     </div>
                 </div>
 
             </div>
         </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="tambahuser" tabindex="-1" aria-labelledby="tambahuser" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah User</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="post" action="<?= site_url('auth/register'); ?>">
-                            <div class="mb-3 mt-4">
-                                <input type="text" name="username" class="form-control" placeholder="Username" required autofocus>
-                            </div>
-                            <div class="mb-3">
-                                <input type="password" name="password" class="form-control" placeholder="Password" required>
-                            </div>
-                            <div class="mb-3">
-                                <select name="role" class="form-select" required>
-                                    <option value="">Login as</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="user">User</option>
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
 
 

@@ -47,35 +47,33 @@ class Auth extends CI_Controller
     }
 
     public function register()
-    {
-        if ($this->input->post()) {
-            $username = $this->input->post('username');
-            $password = $this->input->post('password');
-            $role = $this->input->post('role'); // Ambil role dari input
+{
+    if ($this->input->method() === 'post') {
+        $username = $this->input->post('username');
+        $password = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
+        $role     = $this->input->post('role');
 
-            // Cek jika username sudah ada
-            if ($this->User_model->is_username_exist($username)) {
-                $this->session->set_flashdata('error', 'Username sudah terdaftar!');
-                redirect('auth/register');
-                return;
-            }
+        $data = [
+            'username' => $username,
+            'password' => $password,
+            'role'     => $role
+        ];
 
-            // Simpan ke database
-            $data = [
+        $this->db->insert('users', $data);
+
+        $newUserId = $this->db->insert_id();
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => [
+                'id' => $newUserId,
                 'username' => $username,
-                'password' => password_hash($password, PASSWORD_DEFAULT),
-                'role' => $role // Simpan role yang dipilih user
-            ];
-
-            if ($this->User_model->create_user($data)) {
-                $this->session->set_flashdata('success', 'Akun berhasil dibuat. Silakan login.');
-                redirect('auth/login');
-            } else {
-                $this->session->set_flashdata('error', 'Gagal membuat akun.');
-                redirect('auth/register');
-            }
-        } else {
-            $this->load->view('register');
-        }
+                'role' => $role
+            ]
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
     }
+}
+
 }

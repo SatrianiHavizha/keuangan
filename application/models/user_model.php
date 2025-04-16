@@ -36,5 +36,16 @@ class User_model extends CI_Model {
         return $this->db->insert('users', $data);
     }
 
+    public function get_all_users() {
+        return $this->db->get('users')->result(); // Sesuaikan nama tabel
+    }
+    
+    public function get_saldo_by_user($user_id) {
+        // Hitung total pemasukan - pengeluaran untuk user tertentu
+        $pemasukan = $this->db->select_sum('jumlah')->where('user_id', $user_id)->get('pemasukan')->row()->jumlah;
+        $pengeluaran = $this->db->select_sum('jumlah')->where('user_id', $user_id)->get('pengeluaran')->row()->jumlah;
+        return $pemasukan - $pengeluaran;
+    }
+    
 }
 ?>
