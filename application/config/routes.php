@@ -52,5 +52,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'keuangan';
 $route['auth/login'] = 'auth/login';
 $route['auth/register'] = 'auth/register';
+$route['keuangan/delete_user/(:num)'] = 'keuangan/delete_user/$1';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

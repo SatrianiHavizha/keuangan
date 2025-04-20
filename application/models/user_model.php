@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class User_model extends CI_Model {
+class User_model extends CI_Model
+{
 
     public function __construct()
     {
@@ -28,24 +29,32 @@ class User_model extends CI_Model {
         }
     }
 
-    public function is_username_exist($username) {
+    public function is_username_exist($username)
+    {
         return $this->db->where('username', $username)->get('users')->num_rows() > 0;
     }
 
-    public function create_user($data) {
+    public function create_user($data)
+    {
         return $this->db->insert('users', $data);
     }
 
-    public function get_all_users() {
+    public function get_all_users()
+    {
         return $this->db->get('users')->result(); // Sesuaikan nama tabel
     }
-    
-    public function get_saldo_by_user($user_id) {
+
+    public function get_saldo_by_user($user_id)
+    {
         // Hitung total pemasukan - pengeluaran untuk user tertentu
         $pemasukan = $this->db->select_sum('jumlah')->where('user_id', $user_id)->get('pemasukan')->row()->jumlah;
         $pengeluaran = $this->db->select_sum('jumlah')->where('user_id', $user_id)->get('pengeluaran')->row()->jumlah;
         return $pemasukan - $pengeluaran;
     }
-    
+
+    public function deleteUserById($id)
+    {
+        $this->db->where('id', $id);
+        $this->db->delete('users'); // Ganti 'users' dengan nama tabel user di database kamu
+    }
 }
-?>

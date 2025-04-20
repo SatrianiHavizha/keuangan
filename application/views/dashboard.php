@@ -287,35 +287,169 @@
                         <div class="position-absolute top-0 end-0 mt-2 me-3">
                             <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahuser">+ Tambah User</a>
                         </div>
-
                         <ul class="list-group list-group-flush">
-                            <?php if (!empty($users)): ?>
+                            <?php
+                            $hasUser = false; // untuk cek apakah ada user dengan role 'user'
+                            if (!empty($users)): ?>
                                 <?php foreach ($users as $user): ?>
-                                    <li class="list-group-item">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <strong><?= htmlspecialchars($user->username); ?></strong><br>
-                                                <small>Role: <?= htmlspecialchars($user->role); ?></small><br>
+                                    <?php if ($user->role == 'user'): ?>
+                                        <?php $hasUser = true; ?>
+                                        <li class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong><?= htmlspecialchars($user->username); ?></strong><br>
+                                                    <small class="text-muted">Saldo: Rp <?= number_format($user->saldo, 0, ',', '.'); ?></small><br>
+                                                    <small class="text-muted">Total Pengeluaran: Rp <?= number_format($user->total_pengeluaran, 0, ',', '.'); ?></small>
+                                                </div>
+                                                <div class="d-flex gap-1">
+                                                    <!-- Detail Pemasukan -->
+                                                    <a href="#" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalPemasukan<?= $user->id; ?>">Pemasukan</a>
 
-                                                <?php if ($user->role != 'admin'): ?>
-                                                    <small class="text-muted">Saldo: Rp <?= number_format($user->saldo, 0, ',', '.'); ?></small>
-                                                <?php endif; ?>
+                                                    <!-- Detail Pengeluaran -->
+                                                    <a href="#" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalPengeluaran<?= $user->id; ?>">Pengeluaran</a>
+
+                                                    <!-- Tombol Hapus -->
+                                                    <a href="<?= site_url('keuangan/delete_user/' . $user->id); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin mau hapus user ini?')">Hapus</a>
+                                                </div>
+
+                                                <!-- MODAL PEMASUKAN -->
+                                                <div class="modal fade" id="modalPemasukan<?= $user->id; ?>" tabindex="-1">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header bg-success text-white">
+                                                                <h5 class="modal-title">Detail Pemasukan - <?= htmlspecialchars($user->username); ?></h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <table class="table table-striped table-hover align-middle">
+                                                                    <thead class="table-success">
+                                                                        <tr>
+                                                                            <th>No</th>
+                                                                            <th>Tanggal</th>
+                                                                            <th>Keterangan</th>
+                                                                            <th>Jumlah (Rp)</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <?php
+                                                                        $no = 1;
+                                                                        $hasData = false;
+                                                                        foreach ($transaksi as $item):
+                                                                            if ($item->user_id == $user->id && $item->jenis == 'Pemasukan'):
+                                                                                $hasData = true;
+                                                                        ?>
+                                                                                <tr>
+                                                                                    <td><?= $no++; ?></td>
+                                                                                    <td><?= date('d M Y', strtotime($item->tanggal)); ?></td>
+                                                                                    <td><?= htmlspecialchars($item->keterangan); ?></td>
+                                                                                    <td><?= number_format($item->jumlah, 0, ',', '.'); ?></td>
+                                                                                </tr>
+                                                                            <?php
+                                                                            endif;
+                                                                        endforeach;
+                                                                        if (!$hasData): ?>
+                                                                            <tr>
+                                                                                <td colspan="4" class="text-center text-muted">Tidak ada data pemasukan.</td>
+                                                                            </tr>
+                                                                        <?php endif; ?>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- MODAL PENGELUARAN -->
+                                                <div class="modal fade" id="modalPengeluaran<?= $user->id; ?>" tabindex="-1">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header bg-secondary text-white">
+                                                                <h5 class="modal-title">Detail Pengeluaran - <?= htmlspecialchars($user->username); ?></h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <table class="table table-striped table-hover align-middle">
+                                                                    <thead class="table-secondary">
+                                                                        <tr>
+                                                                            <th>No</th>
+                                                                            <th>Tanggal</th>
+                                                                            <th>Keterangan</th>
+                                                                            <th>Jumlah (Rp)</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <?php
+                                                                        $no = 1;
+                                                                        $hasData = false;
+                                                                        foreach ($transaksi as $item):
+                                                                            if ($item->user_id == $user->id && $item->jenis == 'Pengeluaran'):
+                                                                                $hasData = true;
+                                                                        ?>
+                                                                                <tr>
+                                                                                    <td><?= $no++; ?></td>
+                                                                                    <td><?= date('d M Y', strtotime($item->tanggal)); ?></td>
+                                                                                    <td><?= htmlspecialchars($item->keterangan); ?></td>
+                                                                                    <td><?= number_format($item->jumlah, 0, ',', '.'); ?></td>
+                                                                                </tr>
+                                                                            <?php
+                                                                            endif;
+                                                                        endforeach;
+                                                                        if (!$hasData): ?>
+                                                                            <tr>
+                                                                                <td colspan="4" class="text-center text-muted">Tidak ada data pengeluaran.</td>
+                                                                            </tr>
+                                                                        <?php endif; ?>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
 
                                             </div>
-                                            <div>
-                                                <a href="<?= site_url('admin/delete_user/' . $user->id); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin mau hapus user ini?')">Hapus</a>
-                                            </div>
-                                        </div>
-                                    </li>
+                                        </li>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
+                                <?php if (!$hasUser): ?>
+                                    <li class="list-group-item text-center text-muted">Belum ada user.</li>
+                                <?php endif; ?>
                             <?php else: ?>
                                 <li class="list-group-item text-center text-muted">Belum ada user terdaftar.</li>
                             <?php endif; ?>
                         </ul>
-
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="tambahuser" tabindex="-1" aria-labelledby="tambahuserLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="post" action="<?= site_url('auth/create_user_by_admin'); ?>">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="tambahuserLabel">Tambah User Baru</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3 mt-2">
+                                <input type="text" name="username" class="form-control" placeholder="Username" required autofocus>
+                            </div>
+                            <div class="mb-3">
+                                <input type="password" name="password" class="form-control" placeholder="Password" required>
+                            </div>
+                            <!-- Hidden role input -->
+                            <input type="hidden" name="role" value="user">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 

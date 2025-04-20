@@ -17,70 +17,71 @@ class Keuangan extends CI_Controller
         $user_id = $this->session->userdata('user_id');
         $role = $this->session->userdata('role');
 
-        // Cek apakah admin atau bukan
         if ($role == 'admin') {
-            // Admin bisa lihat semua transaksi
+            // Admin: semua transaksi
             $data['transaksi'] = $this->db->get('transaksi')->result();
 
-            // Total pemasukan semua user
+            // Total semua pemasukan
             $this->db->select_sum('jumlah');
             $this->db->where('jenis', 'Pemasukan');
             $pemasukan = $this->db->get('transaksi')->row();
             $data['total_pemasukan'] = $pemasukan->jumlah ?? 0;
 
-            // Total pengeluaran semua user
+            // Total semua pengeluaran
             $this->db->select_sum('jumlah');
             $this->db->where('jenis', 'Pengeluaran');
             $pengeluaran = $this->db->get('transaksi')->row();
             $data['total_pengeluaran'] = $pengeluaran->jumlah ?? 0;
 
-            // Hitung saldo total semua user
+            // Saldo total semua user
             $data['saldo'] = $data['total_pemasukan'] - $data['total_pengeluaran'];
 
             // Ambil semua user
             $data['users'] = $this->user_model->get_all_users();
 
-            // Tambahkan saldo per user (kecuali admin)
+            // Loop user dan hitung saldo + total pengeluaran
             foreach ($data['users'] as &$user) {
                 if ($user->role != 'admin') {
-                    // Pemasukan user
+                    // Pemasukan
                     $this->db->select_sum('jumlah');
                     $this->db->where(['jenis' => 'Pemasukan', 'user_id' => $user->id]);
                     $pemasukan = $this->db->get('transaksi')->row()->jumlah ?? 0;
 
-                    // Pengeluaran user
+                    // Pengeluaran
                     $this->db->select_sum('jumlah');
                     $this->db->where(['jenis' => 'Pengeluaran', 'user_id' => $user->id]);
                     $pengeluaran = $this->db->get('transaksi')->row()->jumlah ?? 0;
 
                     $user->saldo = $pemasukan - $pengeluaran;
+                    $user->total_pengeluaran = $pengeluaran;
                 } else {
                     $user->saldo = null;
+                    $user->total_pengeluaran = null;
                 }
             }
-
         } else {
-            // User hanya lihat transaksinya sendiri
+            // User biasa: hanya transaksi sendiri
             $data['transaksi'] = $this->db->get_where('transaksi', ['user_id' => $user_id])->result();
 
-            // Total pemasukan user
+            // Pemasukan
             $this->db->select_sum('jumlah');
             $this->db->where(['jenis' => 'Pemasukan', 'user_id' => $user_id]);
             $pemasukan = $this->db->get('transaksi')->row();
             $data['total_pemasukan'] = $pemasukan->jumlah ?? 0;
 
-            // Total pengeluaran user
+            // Pengeluaran
             $this->db->select_sum('jumlah');
             $this->db->where(['jenis' => 'Pengeluaran', 'user_id' => $user_id]);
             $pengeluaran = $this->db->get('transaksi')->row();
             $data['total_pengeluaran'] = $pengeluaran->jumlah ?? 0;
 
-            // Saldo user
+            // Saldo
             $data['saldo'] = $data['total_pemasukan'] - $data['total_pengeluaran'];
         }
 
         $this->load->view('dashboard', $data);
     }
+
 
     public function hapus($id)
     {
@@ -119,4 +120,13 @@ class Keuangan extends CI_Controller
         $this->db->insert('transaksi', $data);
         redirect('keuangan');
     }
+
+    public function delete_user($id)
+{
+    $this->load->model('User_model'); // Pastikan model dimuat
+    $this->User_model->deleteUserById($id);
+    $this->session->set_flashdata('success', 'User berhasil dihapus.');
+    redirect('keuangan'); // Ganti dengan halaman list user kamu
+}
+
 }
